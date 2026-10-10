@@ -27,12 +27,12 @@ export const createComment = asyncHandler(async (req, res) => {
 
 // getComments
 export const getComments = asyncHandler(async (req, res) => {
-  const comments = await getCommentsService(req.params.taskId, req.user);
+  const result = await getCommentsService(req.params.taskId, req.query, req.user);
 
   return res.status(200).json({
     success: true,
 
-    data: comments,
+    data: result,
   });
 });
 

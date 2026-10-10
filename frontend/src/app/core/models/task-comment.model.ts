@@ -1,0 +1,1 @@
+export interface TaskComment { id: number; taskId: number; userId: number; organizationId: number; message: string; created_at: string; updated_at: string; user?: { id: number; firstName: string; lastName: string | null; email: string }; }

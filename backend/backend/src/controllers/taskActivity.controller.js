@@ -3,12 +3,12 @@ import { getTaskActivityService, getGlobalTaskActivityService} from "../services
 
 // getTaskActivity
 export const getTaskActivity = asyncHandler(async (req, res) => {
-  const activities = await getTaskActivityService(req.params.id, req.user);
+  const result = await getTaskActivityService(req.params.id, req.query, req.user);
 
   return res.status(200).json({
     success: true,
 
-    data: activities,
+    data: result,
   });
 });
 

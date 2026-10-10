@@ -136,7 +136,11 @@ export const createCommentService = async (taskId, message, currentUser) => {
 // ---------------------------------------------------------------------------
 // getCommentsService
 // ---------------------------------------------------------------------------
-export const getCommentsService = async (taskId, currentUser) => {
+export const getCommentsService = async (taskId, query, currentUser) => {
+  const page = Number(query.page) || 1;
+  const limit = Number(query.limit) || 10;
+  const offset = (page - 1) * limit;
+
   const canViewAllTasks = currentUser.role.permissions.some(
     (permission) => permission.code === PERMISSIONS.VIEW_ALL_TASKS,
   );
@@ -160,7 +164,7 @@ export const getCommentsService = async (taskId, currentUser) => {
     throw new AppError("Task not found", HTTP_STATUS.NOT_FOUND);
   }
 
-  return await TaskComment.findAll({
+  const { rows, count } = await TaskComment.findAndCountAll({
     where: {
       taskId: task.id,
       organizationId: currentUser.organizationId,
@@ -173,7 +177,19 @@ export const getCommentsService = async (taskId, currentUser) => {
       },
     ],
     order: [["createdAt", "ASC"]],
+    limit,
+    offset,
   });
+
+  return {
+    comments: rows,
+    pagination: {
+      page,
+      limit,
+      totalRecords: count,
+      totalPages: Math.ceil(count / limit),
+    },
+  };
 };
 
 // ---------------------------------------------------------------------------

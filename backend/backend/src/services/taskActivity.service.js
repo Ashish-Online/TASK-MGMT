@@ -26,7 +26,11 @@ export const createTaskActivity = async ({
 };
 
 // get task Activity service
-export const getTaskActivityService = async (taskId, currentUser) => {
+export const getTaskActivityService = async (taskId, query, currentUser) => {
+  const page = Number(query.page) || 1;
+  const limit = Number(query.limit) || 10;
+  const offset = (page - 1) * limit;
+
   /*
   |--------------------------------------------------------------------------
   | Task Exists?
@@ -67,7 +71,7 @@ export const getTaskActivityService = async (taskId, currentUser) => {
   |--------------------------------------------------------------------------
   */
 
-  return await TaskActivity.findAll({
+  const { rows, count } = await TaskActivity.findAndCountAll({
     where: {
       taskId: task.id,
       organizationId: currentUser.organizationId,
@@ -83,7 +87,20 @@ export const getTaskActivityService = async (taskId, currentUser) => {
     ],
 
     order: [["createdAt", "DESC"]],
+
+    limit,
+    offset,
   });
+
+  return {
+    activities: rows,
+    pagination: {
+      page,
+      limit,
+      totalRecords: count,
+      totalPages: Math.ceil(count / limit),
+    },
+  };
 };
 
 // getGlobalTaskActivityService

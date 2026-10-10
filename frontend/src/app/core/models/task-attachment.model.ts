@@ -1,0 +1,1 @@
+export interface TaskAttachment { id: number; taskId: number; fileName: string | null; fileUrl: string; fileType: string | null; cloudinaryPublicId: string; uploadedBy: number | null; uploader?: { id: number; firstName: string; lastName: string | null }; }
